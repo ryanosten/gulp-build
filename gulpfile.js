@@ -44,10 +44,3 @@ gulp.task('clean', function(){
 gulp.task('build', ['scripts','styles','images']);
 
 gulp.task('default', ['build']);
-
-
-
-//.pipe(maps.init())
-//.pipe(maps.write('./'))
-
-//next task, create dist folder

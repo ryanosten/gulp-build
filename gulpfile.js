@@ -9,24 +9,17 @@ var gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
     del = require('del');
 
-gulp.task('concatScripts', function(){
+gulp.task('scripts', ['clean'], function(){
   return gulp.src(['js/global.js', 'js/circle/autogrow.js', 'js/circle/circle.js'])
         .pipe(maps.init())
         .pipe(concat('app.js'))
-        .pipe(maps.write('./'))
-        .pipe(gulp.dest('js'));
-});
-
-gulp.task('scripts', ['concatScripts'], function(){
-  return gulp.src('js/app.js')
-        .pipe(maps.init())
         .pipe(uglify())
         .pipe(rename('all.min.js'))
         .pipe(maps.write('./'))
         .pipe(gulp.dest('dist/scripts'));
 });
 
-gulp.task('styles', function(){
+gulp.task('styles', ['clean'], function(){
   return gulp.src('sass/global.scss')
     .pipe(maps.init())
     .pipe(sass())
@@ -35,7 +28,7 @@ gulp.task('styles', function(){
     .pipe(gulp.dest('dist/styles'))
 })
 
-gulp.task ('images', function(){
+gulp.task ('images', ['clean'], function(){
   return gulp.src('images/*.{jpg,png}')
     .pipe(imagemin([
       imagemin.jpegtran({progressive: true}),
@@ -44,16 +37,15 @@ gulp.task ('images', function(){
     .pipe(gulp.dest('dist/content'));
 })
 
-/*
-gulp.task('build', ['minifyScripts'], function(){
-  return gulp.src('js/all.min.js')
-    .pipe(gulp.dest('dist/scripts'));
+gulp.task('clean', function(){
+  return del('dist');
 });
-*/
 
-gulp.task('default', function(){
-  gulp.start('build');
-});
+gulp.task('build', ['scripts','styles','images']);
+
+gulp.task('default', ['build']);
+
+
 
 //.pipe(maps.init())
 //.pipe(maps.write('./'))

@@ -9,13 +9,13 @@ var gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
     browserSync = require('browser-sync').create(),
     eslint = require('gulp-eslint'),
-    cache = require('gulp-cache'),
+    gutil = require('gulp-util'),
     del = require('del');
 
 gulp.task('scripts', function(){
-  return gulp.src(['src/js/global.js', 'src/js/circle/autogrow.js', 'src/js/circle/circle.js', '!node_modules/**'])
-        .pipe(eslint())
-        .pipe(eslint.format())
+  return gulp.src(['src/js/**/*.js'])
+        //.pipe(eslint())
+        //.pipe(eslint.format())
         .pipe(maps.init())
         .pipe(concat('app.js'))
         .pipe(uglify())
@@ -32,7 +32,7 @@ gulp.task('styles', function(){
     .pipe(maps.write('./'))
     .pipe(gulp.dest('dist/styles'))
     .pipe(browserSync.stream());
-})
+});
 
 gulp.task ('images', function(){
   return gulp.src('src/images/*', {base: 'src'})
@@ -41,31 +41,36 @@ gulp.task ('images', function(){
       imagemin.optipng({optimizationLevel: 5})
     ]))
     .pipe(gulp.dest('dist/content'));
-})
+});
 
 gulp.task('clean', function(){
   return del('dist');
 });
 
 gulp.task('watchSass', function(){
-  return gulp.watch('src/sass/*.scss', ['styles'])
-})
+  gutil.log('watching for sass changes!');
+  return gulp.watch('src/sass/*.scss', ['styles']);
 
-gulp.task('build', ['scripts','styles','images','watchSass'], function(){
-  return gulp.src(['index.html', 'src/icons'])
-    .pipe(gulp.dest('dist'))
 });
 
-gulp.task('serve', ['build'], function (){
-  return browserSync.init({
-      server: {
-        baseDir: 'dist'
-      }
+gulp.task('watchJS', function(){
+  gutil.log('watching for js changes!');
+  return gulp.watch('src/js/**/*.js', ['scripts']);
     });
 
-    gulp.watch('dist/styles/*.min.css').on('change', browserSync.reload);
-})
+gulp.task('build', ['scripts','styles','images'], function(){
+  return gulp.src(['index.html', 'src/icons'])
+    .pipe(gulp.dest('dist'));
+});
+
+gulp.task('serve', ['build', 'watchSass', 'watchJS'], function (){
+  return browserSync.init({
+    server: {
+      baseDir: 'dist'
+    }
+  });
+});
 
 gulp.task('default', ['clean'], function(){
   gulp.start('serve');
-})
+});

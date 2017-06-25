@@ -43,11 +43,7 @@ gulp.task ('images', function(){
     .pipe(gulp.dest('dist/content'));
 })
 
-gulp.task('clearCache', function(){
-  cache.clearAll();
-});
-
-gulp.task('clean', ['clearCache'], function(){
+gulp.task('clean', function(){
   return del('dist');
 });
 

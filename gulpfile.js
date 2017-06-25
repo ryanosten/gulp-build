@@ -13,9 +13,9 @@ var gulp = require('gulp'),
     del = require('del');
 
 gulp.task('scripts', function(){
-  return gulp.src(['src/js/**/*.js'])
-        //.pipe(eslint())
-        //.pipe(eslint.format())
+  return gulp.src(['src/js/**/*.js', '!node_modules'])
+        .pipe(eslint())
+        .pipe(eslint.format())
         .pipe(maps.init())
         .pipe(concat('app.js'))
         .pipe(uglify())

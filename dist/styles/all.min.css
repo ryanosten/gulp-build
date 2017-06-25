@@ -1962,7 +1962,7 @@ body {
   left: 0;
   right: 0;
   z-index: 2;
-  background: rgba(34, 34, 34, 0.98); }
+  background: black; }
 
 .photo-stream--photos--list {
   list-style: none; }

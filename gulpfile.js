@@ -7,10 +7,14 @@ var gulp = require('gulp'),
     sass = require('gulp-sass'),
     maps = require('gulp-sourcemaps'),
     imagemin = require('gulp-imagemin'),
+    browserSync = require('browser-sync').create(),
+    eslint = require('gulp-eslint'),
     del = require('del');
 
 gulp.task('scripts', ['clean'], function(){
-  return gulp.src(['js/global.js', 'js/circle/autogrow.js', 'js/circle/circle.js'])
+  return gulp.src(['src/js/global.js', 'src/js/circle/autogrow.js', 'src/js/circle/circle.js', '!node_modules/**'])
+        .pipe(eslint())
+        .pipe(eslint.format())
         .pipe(maps.init())
         .pipe(concat('app.js'))
         .pipe(uglify())
@@ -20,16 +24,17 @@ gulp.task('scripts', ['clean'], function(){
 });
 
 gulp.task('styles', ['clean'], function(){
-  return gulp.src('sass/global.scss')
+  return gulp.src('src/sass/global.scss')
     .pipe(maps.init())
     .pipe(sass())
     .pipe(rename('all.min.css'))
     .pipe(maps.write('./'))
     .pipe(gulp.dest('dist/styles'))
+    .pipe(browserSync.stream());
 })
 
 gulp.task ('images', ['clean'], function(){
-  return gulp.src('images/*.{jpg,png}')
+  return gulp.src('src/images/*', {base: 'src'})
     .pipe(imagemin([
       imagemin.jpegtran({progressive: true}),
       imagemin.optipng({optimizationLevel: 5})
@@ -41,6 +46,23 @@ gulp.task('clean', function(){
   return del('dist');
 });
 
-gulp.task('build', ['scripts','styles','images']);
+gulp.task('watchSass', function(){
+  return gulp.watch('src/sass/*.scss', ['styles'])
+})
 
-gulp.task('default', ['build']);
+gulp.task('build', ['scripts','styles','images', 'watchSass'], function(){
+  return gulp.src(['index.html', 'src/icons'])
+    .pipe(gulp.dest('dist'))
+});
+
+gulp.task('serve', ['build'], function (){
+  return browserSync.init({
+      server: {
+        baseDir: 'dist'
+      }
+    });
+
+    gulp.watch('dist/styles/*.min.css').on('change', browserSync.reload);
+})
+
+gulp.task('default', ['serve'])

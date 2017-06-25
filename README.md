@@ -7,7 +7,7 @@
 > Install dev dependancies
 
 ```sh
-npms install --save-dev
+npm install --save-dev
 ```
 > Gulp everything!
 

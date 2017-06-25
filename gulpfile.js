@@ -50,13 +50,12 @@ gulp.task('clean', function(){
 gulp.task('watchSass', function(){
   gutil.log('watching for sass changes!');
   return gulp.watch('src/sass/*.scss', ['styles']);
-
 });
 
 gulp.task('watchJS', function(){
   gutil.log('watching for js changes!');
   return gulp.watch('src/js/**/*.js', ['scripts']);
-    });
+});
 
 gulp.task('build', ['scripts','styles','images'], function(){
   return gulp.src(['index.html', 'src/icons'])

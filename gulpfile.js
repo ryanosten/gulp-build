@@ -13,7 +13,7 @@ var gulp = require('gulp'),
     cleanCSS = require('gulp-clean-css'),
     del = require('del');
 
-gulp.task('scripts', ['clean'], function(){
+gulp.task('scripts', function(){
   return gulp.src(['src/js/**/*.js', '!node_modules'])
     .pipe(eslint())
     .pipe(eslint.format())
@@ -25,7 +25,7 @@ gulp.task('scripts', ['clean'], function(){
     .pipe(gulp.dest('dist/scripts'));
 });
 
-gulp.task('styles', ['clean'],  function(){
+gulp.task('styles', function(){
   return gulp.src('src/sass/global.scss')
     .pipe(maps.init())
     .pipe(sass())
@@ -36,8 +36,8 @@ gulp.task('styles', ['clean'],  function(){
     .pipe(browserSync.stream());
 });
 
-gulp.task ('images', ['clean'], function(){
-  return gulp.src('src/images/*', {base: 'src'})
+gulp.task ('images', function(){
+  return gulp.src(['src/images/*', 'src/icons/**/*'], {base: 'src'})
     .pipe(imagemin([
       imagemin.jpegtran({progressive: true}),
       imagemin.optipng({optimizationLevel: 5})

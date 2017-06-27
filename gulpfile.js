@@ -10,9 +10,10 @@ var gulp = require('gulp'),
     browserSync = require('browser-sync').create(),
     eslint = require('gulp-eslint'),
     gutil = require('gulp-util'),
+    cleanCSS = require('gulp-clean-css'),
     del = require('del');
 
-gulp.task('scripts', function(){
+gulp.task('scripts', ['clean'], function(){
   return gulp.src(['src/js/**/*.js', '!node_modules'])
     .pipe(eslint())
     .pipe(eslint.format())
@@ -24,17 +25,18 @@ gulp.task('scripts', function(){
     .pipe(gulp.dest('dist/scripts'));
 });
 
-gulp.task('styles', function(){
+gulp.task('styles', ['clean'],  function(){
   return gulp.src('src/sass/global.scss')
     .pipe(maps.init())
     .pipe(sass())
+    .pipe(cleanCSS())
     .pipe(rename('all.min.css'))
     .pipe(maps.write('./'))
     .pipe(gulp.dest('dist/styles'))
     .pipe(browserSync.stream());
 });
 
-gulp.task ('images', function(){
+gulp.task ('images', ['clean'], function(){
   return gulp.src('src/images/*', {base: 'src'})
     .pipe(imagemin([
       imagemin.jpegtran({progressive: true}),
@@ -57,12 +59,12 @@ gulp.task('watchJS', function(){
   return gulp.watch('src/js/**/*.js', ['scripts']);
 });
 
-gulp.task('build', ['scripts','styles','images'], function(){
+gulp.task('build', ['clean','scripts','styles','images'], function(){
   return gulp.src(['index.html', 'src/icons'])
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('serve', ['build', 'watchSass', 'watchJS'], function (){
+gulp.task('serve', ['watchSass', 'watchJS'], function (){
   return browserSync.init({
     server: {
       baseDir: 'dist'
@@ -70,6 +72,6 @@ gulp.task('serve', ['build', 'watchSass', 'watchJS'], function (){
   });
 });
 
-gulp.task('default', ['clean'], function(){
+gulp.task('default', ['build'], function(){
   gulp.start('serve');
 });

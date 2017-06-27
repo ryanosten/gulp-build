@@ -8,15 +8,12 @@ var gulp = require('gulp'),
     maps = require('gulp-sourcemaps'),
     imagemin = require('gulp-imagemin'),
     browserSync = require('browser-sync').create(),
-    eslint = require('gulp-eslint'),
     gutil = require('gulp-util'),
     cleanCSS = require('gulp-clean-css'),
     del = require('del');
 
-gulp.task('scripts', function(){
-  return gulp.src(['src/js/**/*.js', '!node_modules'])
-    .pipe(eslint())
-    .pipe(eslint.format())
+gulp.task('scripts', ['clean'], function(){
+  return gulp.src('src/js/**/*.js')
     .pipe(maps.init())
     .pipe(concat('app.js'))
     .pipe(uglify())
@@ -25,7 +22,7 @@ gulp.task('scripts', function(){
     .pipe(gulp.dest('dist/scripts'));
 });
 
-gulp.task('styles', function(){
+gulp.task('styles', ['clean'], function(){
   return gulp.src('src/sass/global.scss')
     .pipe(maps.init())
     .pipe(sass())
@@ -36,7 +33,7 @@ gulp.task('styles', function(){
     .pipe(browserSync.stream());
 });
 
-gulp.task ('images', function(){
+gulp.task ('images', ['clean'], function(){
   return gulp.src(['src/images/*', 'src/icons/**/*'], {base: 'src'})
     .pipe(imagemin([
       imagemin.jpegtran({progressive: true}),
@@ -59,8 +56,8 @@ gulp.task('watchJS', function(){
   return gulp.watch('src/js/**/*.js', ['scripts']);
 });
 
-gulp.task('build', ['clean','scripts','styles','images'], function(){
-  return gulp.src(['index.html', 'src/icons'])
+gulp.task('build', ['scripts','styles','images'], function(){
+  return gulp.src('index.html')
     .pipe(gulp.dest('dist'));
 });
 
